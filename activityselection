@@ -1,0 +1,140 @@
+#include <iostream>
+#include <vector>
+#include <string.h>
+#include <algorithm>
+using namespace std;
+int activitySelection(vector<int> &start, vector<int> &end, vector<string> &seq) {
+    int ans = 0;
+    vector<pair<int,int>> arr;
+    for (int i = 0; i < start.size(); i++) {
+        arr.push_back(make_pair(end[i], start[i]));
+    }
+    sort(arr.begin(), arr.end());
+    int finish = -1;
+    for(int i = 0; i < arr.size(); i++) {
+        pair<int,int> activity = arr[i];
+        if (activity.second > finish) {
+            finish = activity.first;
+            ans++;
+            //cout<<activity.second<<" "<<activity.first;
+            for(int j=0;j<start.size();j++){
+                if(activity.first==end[j]){
+                    cout<<seq[j]<<" ";
+                    break;
+                }
+            }
+        }
+    }
+    
+    return 0;
+}
+int main() {
+    int n;
+    cin>>n;
+    vector<string> seq(n);
+    vector<int> start(n);
+    vector<int> end(n);
+    for(int i=0;i<n;i++){
+        cin >> seq[i] >> start[i] >> end[i];
+        //cout<<seq[i]<<" "<<start[i]<<" "<<end[i]<<endl;
+    }
+    cout<<activitySelection(start, end,seq);
+    
+    return 0;
+}
+
+
+//recursive
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string.h>
+using namespace std;
+void recursiveActivitySelection(vector<int> &end,vector<pair<int, int>> &activities, int index, int finish, int &count,vector<string> &seq) {
+    if (index >= activities.size()) return;
+    if (activities[index].second >= finish) {
+        count++;
+        for(int i=0;i<end.size();i++){
+            if(activities[index].first==end[i]){
+                cout<<seq[i]<<" ";
+            }
+        }
+        recursiveActivitySelection(end, activities, index + 1, activities[index].first, count,seq);
+    } else {
+        recursiveActivitySelection(end ,activities, index + 1, finish, count,seq);
+    }
+}
+int activitySelection(vector<int> &start, vector<int> &end,vector<string> &seq) {
+    vector<pair<int, int>> activities;
+    for (int i = 0; i < start.size(); i++) {
+        activities.push_back({end[i], start[i]});
+    }
+    sort(activities.begin(), activities.end());
+    int count = 0;
+    recursiveActivitySelection(end,activities, 0, 0, count,seq);
+    return count;
+}
+int main() {
+    int n;
+    cin >> n;
+    vector<string> seq(n);
+    vector<int> start(n), end(n);
+    for (int i = 0; i < n; i++) {
+        cin >> seq[i] >> start[i] >> end[i];
+    }
+   activitySelection(start, end, seq);
+    return 0;
+}
+
+
+
+
+//priority queue with last start time
+#include<iostream>
+#include<string.h>
+#include<queue>
+#include<vector>
+#include<algorithm>
+using namespace std;
+int activitySelection(vector<int> &start, vector<int> &end,vector<string> &seq) {
+    int ans = 0;
+    priority_queue<pair<int,int>> p;
+    for (int i = 0; i < start.size(); i++) {
+        p.push(make_pair(start[i], end[i]));
+    }
+    int finish = 9999;
+    vector<string> s;
+    int k=0;
+    while (!p.empty()) {
+        pair<int,int> activity = p.top();
+        p.pop();
+        if (activity.second <= finish) {
+            finish = activity.first;
+            for(int j=0;j<end.size();j++){
+                if(activity.second==end[j]){
+                    s.push_back(seq[j]);
+                    k++;
+                    break;
+                }
+            }
+            ans++;
+        }
+    }
+    for(int i=k-1;i>=0;i--){
+        cout<<s[i]<<" ";
+    }
+    return ans;
+}
+int main() {
+    int n;
+    cin>>n;
+    
+    vector<string> seq(n);
+    vector<int> start(n);
+    vector<int> end(n);
+    for(int i=0;i<n;i++){
+        cin >> seq[i] >> start[i] >> end[i];
+    }
+    cout<<activitySelection(start, end,seq);
+    return 0;
+}
