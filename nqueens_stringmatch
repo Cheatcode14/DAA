@@ -160,6 +160,51 @@ void rabin_karp_matcher(string T, string P, int d, int q)
 }
 
 ---------------------------------------------------------------------------------------------------
+Variation: Approximate String Matching (Edit Distance-based Matching)
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+// Function to compute the minimum edit distance between two strings
+int editDistance(string str1, string str2) {
+    int m = str1.size();
+    int n = str2.size();
+
+    vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+
+    // Initialize the DP table
+    for (int i = 0; i <= m; i++) {
+        for (int j = 0; j <= n; j++) {
+            if (i == 0)
+                dp[i][j] = j; // Insert all characters of str2
+            else if (j == 0)
+                dp[i][j] = i; // Remove all characters of str1
+            else if (str1[i - 1] == str2[j - 1])
+                dp[i][j] = dp[i - 1][j - 1]; // Characters match
+            else
+                dp[i][j] = 1 + min({dp[i - 1][j],   // Remove
+                                    dp[i][j - 1],   // Insert
+                                    dp[i - 1][j - 1]}); // Substitute
+        }
+    }
+
+    return dp[m][n];
+}
+
+int main() {
+    string str1, str2;
+    cout << "Enter the first string: ";
+    cin >> str1;
+    cout << "Enter the second string: ";
+    cin >> str2;
+
+    int distance = editDistance(str1, str2);
+    cout << "Minimum edit distance: " << distance << endl;
+
+    return 0;
+}
+----------------------------------------------------------------------------
 
 
 ---------------------------------------N-Queens---------------------------------
