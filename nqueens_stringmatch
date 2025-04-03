@@ -246,3 +246,96 @@ int main() {
     cout << "Number of solutions: " << solutions << endl;
     return 0;
 }
+------------------------------Sudoku----------------------------------
+#include <iostream>
+using namespace std;
+
+#define N 9  // Size of the Sudoku grid
+
+// Function to check if placing num in board[row][col] is valid
+bool isSafe(int board[N][N], int row, int col, int num) {
+    // Check the row and column
+    for (int i = 0; i < N; i++) {
+        if (board[row][i] == num || board[i][col] == num)
+            return false;
+    }
+
+    // Check the 3x3 subgrid
+    int startRow = row - row % 3, startCol = col - col % 3;
+    for (int i = 0; i < 3; i++)
+        for (int j = 0; j < 3; j++)
+            if (board[i + startRow][j + startCol] == num)
+                return false;
+
+    return true; // Safe to place the number
+}
+
+// Backtracking function to solve Sudoku
+bool solveSudoku(int board[N][N], int row, int col) {
+    // If we reach the last cell, return true
+    if (row == N - 1 && col == N)
+        return true;
+
+    // Move to next row if we reach end of a column
+    if (col == N) {
+        row++;
+        col = 0;
+    }
+
+    // If cell is already filled, move to the next
+    if (board[row][col] != 0)
+        return solveSudoku(board, row, col + 1);
+
+    // Try placing numbers 1-9
+    for (int num = 1; num <= 9; num++) {
+        if (isSafe(board, row, col, num)) {
+            board[row][col] = num;
+            if (solveSudoku(board, row, col + 1))
+                return true;
+            board[row][col] = 0; // Backtrack
+        }
+    }
+    return false; // No solution found
+}
+
+// Function to print the Sudoku board
+void printBoard(int board[N][N]) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++)
+            cout << board[i][j] << " ";
+        cout << endl;
+    }
+}
+
+// Function to get user input for the Sudoku board
+void getUserInput(int board[N][N]) {
+    cout << "Enter the Sudoku grid (use 0 for empty cells):\n";
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            cin >> board[i][j];
+            if (board[i][j] < 0 || board[i][j] > 9) {
+                cout << "Invalid input! Please enter a number between 0 and 9.\n";
+                j--; // Retry the same cell
+            }
+        }
+    }
+}
+
+// Driver code
+int main() {
+    int board[N][N];
+
+    // Get input from user
+    getUserInput(board);
+
+    // Solve Sudoku
+    if (solveSudoku(board, 0, 0)) {
+        cout << "Solved Sudoku:\n";
+        printBoard(board);
+    } else {
+        cout << "No solution exists.\n";
+    }
+
+    return 0;
+}
+-----------------‐-------------------------------------------------------
